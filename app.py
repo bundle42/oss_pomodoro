@@ -3,6 +3,7 @@ import streamlit.components.v1 as components
 import time
 from datetime import datetime
 
+
 # CSS
 TIMER_CSS = """
 <style>
