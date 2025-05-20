@@ -1,10 +1,8 @@
-/* HTML 배경 스타일(streamlit에는 적용x) */
 body {
     color: #2E86C1;
     background-color: #D6EAF8;
 }
 
-/* 버튼 스타일(디자인 부분) */
 .stButton>button {
     color: #666;
     border-radius: 15%;
