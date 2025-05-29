@@ -123,10 +123,10 @@ else:
     components.html(draw_circle(0, 1), height=260)
 
 # ===== 🖼 이미지 버튼 표시 =====
-start_img = load_image_base64("start.png")
-pause_img = load_image_base64("pause.png")
-reset_img = load_image_base64("reset.png")
-stop_img  = load_image_base64("stop.png")
+start_img = load_image_base64("btn_img/start.png")
+pause_img = load_image_base64("btn_img/pause.png")
+reset_img = load_image_base64("btn_img/reset.png")
+stop_img  = load_image_base64("btn_img/stop.png")
 
 col1, col2, col3, col4 = st.columns(4)
 with col1:
