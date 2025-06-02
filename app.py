@@ -2,11 +2,9 @@ import streamlit as st
 import streamlit.components.v1 as components
 import time
 from datetime import datetime
+import base64
 
-#변경할 내용
-#코드
-#코드 등등
-
+# ===== 🎨 타이머 원형 스타일 =====
 # CSS
 TIMER_CSS = """
 <style>
@@ -30,6 +28,21 @@ def draw_circle(remaining, total):
       <span>{mm:02d}:{ss:02d}</span>
     </div>"""
     return html
+
+# ===== 🖼 이미지 버튼 관련 함수 =====
+def load_image_base64(file_path):
+    with open(file_path, "rb") as img_file:
+        return base64.b64encode(img_file.read()).decode()
+
+def image_button(img_base64, key):
+    btn_html = f"""
+    <form action="" method="get">
+        <button type="submit" name="btn" value="{key}" style="border:none;background:none;">
+            <img src="data:image/png;base64,{img_base64}" width="60">
+        </button>
+    </form>
+    """
+    components.html(btn_html, height=80)
 
 def local_css(file_name):
     with open(file_name) as f:
@@ -78,61 +91,90 @@ def handle_stop():
     st.session_state.session_count = 0
 
 # UI
+# ===== ⚙️ 타이머 설정 UI =====
 with st.sidebar:
-    st.markdown("## 📝 기록")
-
-st.title("뽀모도로 타이머 프로토타입")
-st.caption("2025-05-20 필수 기능 구현 by 김민성")
-
-# 집중 시간 설정
-st.subheader("🕒 집중 시간 설정")
-col1, col2, col3 = st.columns(3)
-with col1:
+    st.markdown("## 🕒 집중 시간 설정")
     focus_hour = st.number_input("Hours", 0, 10, 0)
-with col2:
     focus_min = st.number_input("Minutes", 0, 59, 0)
-with col3:
     focus_sec = st.number_input("Seconds", 0, 59, 5)
 
-# 쉬는 시간 설정
-st.subheader("🛌 휴식 시간 설정")
-col4, col5, col6 = st.columns(3)
-with col4:
+    st.markdown("## 🛌 휴식 시간 설정")
     break_hour = st.number_input("Hours ", 0, 5, 0)
-with col5:
     break_min = st.number_input("Minutes ", 0, 59, 0)
-with col6:
     break_sec = st.number_input("Seconds ", 0, 59, 5)
 
-# 초 단위로 변환
+    st.markdown("## 🔁 세션 반복 설정")
+    st.session_state.session_goal = st.number_input("반복할 세션 수", 1, 20, 1)
+
+    st.markdown("## 📝 기록")
+    st.markdown(f"🍅 완료된 세션: **{st.session_state.session_count} / {st.session_state.session_goal}**")
+
+# ===== 🔢 시간 계산 =====
 total_focus = focus_hour * 3600 + focus_min * 60 + focus_sec
 total_break = break_hour * 3600 + break_min * 60 + break_sec
 
-# 세션 설정
-st.subheader("🔁 세션 반복 설정")
-st.session_state.session_goal = st.number_input("반복할 세션 수", min_value=1, max_value=20, value=1)
-st.markdown(f"### 🍅 완료된 세션: {st.session_state.session_count} / {st.session_state.session_goal}")
+# ===== 🕑 타이머 시각화 =====
+st.title("⏳ 뽀모도로 타이머 프로토타입")
+st.caption("2025-05-20 필수 기능 구현 by 김민성")
 
-# 버튼 영역
-col_btn1, col_btn2, col_btn3, col_btn4 = st.columns(4)
-with col_btn1:
-    if st.button("▶️ 타이머 시작"):
+if st.session_state.phase == 'focus':
+    components.html(draw_circle(st.session_state.remaining_focus, total_focus), height=260)
+elif st.session_state.phase == 'break':
+    components.html(draw_circle(st.session_state.remaining_break, total_break), height=260)
+else:
+    components.html(draw_circle(0, 1), height=260)
+
+# ===== 🖼 이미지 버튼 표시 =====
+start_img = load_image_base64("btn_img/start.png")
+pause_img = load_image_base64("btn_img/pause.png")
+reset_img = load_image_base64("btn_img/reset.png")
+stop_img  = load_image_base64("btn_img/stop.png")
+
+# # 버튼 영역
+# col_btn1, col_btn2, col_btn3, col_btn4 = st.columns(4)
+# with col_btn1:
+#     if st.button("▶️ 타이머 시작"):
+#         handle_start()
+# with col_btn2:
+#     if st.button("⏸️ 일시정지"):
+#         handle_pause()
+# with col_btn3:
+#     if st.button("🔄 타이머 초기화"):
+#         handle_reset()
+# with col_btn4:
+#     if st.button("⏹️ 타이머 중지"):
+#         handle_stop()
+
+col1, col2, col3, col4 = st.columns(4)
+with col1:
+    image_button(start_img, "start")
+with col2:
+    image_button(pause_img, "pause")
+with col3:
+    image_button(reset_img, "reset")
+with col4:
+    image_button(stop_img, "stop")
+
+# ===== 🖱 버튼 이벤트 처리 =====
+if "btn" in st.query_params:
+    btn_val = st.query_params["btn"][0]
+    if btn_val == "start":
         handle_start()
-with col_btn2:
-    if st.button("⏸️ 일시정지"):
+    elif btn_val == "pause":
         handle_pause()
-with col_btn3:
-    if st.button("🔄 타이머 초기화"):
+    elif btn_val == "reset":
         handle_reset()
-with col_btn4:
-    if st.button("⏹️ 타이머 중지"):
+    elif btn_val == "stop":
         handle_stop()
+    # 이벤트 후 파라미터 초기화
+    st.query_params()
 
 # 타이머 실행
 if st.session_state.running:
     if st.session_state.phase == 'focus' and st.session_state.remaining_focus > 0:
         st.session_state.remaining_focus -= 1
-        components.html(draw_circle(st.session_state.remaining_focus, total_focus), height=260)
+        # components.html(draw_circle(st.session_state.remaining_focus, total_focus), height=260)
+        st.session_state.remaining_focus -= 1
         time.sleep(1)
         st.rerun()
 

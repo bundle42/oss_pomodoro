@@ -184,3 +184,9 @@ if st.session_state.running:
             st.session_state.remaining_break = total_break
             st.session_state.running = True
         st.rerun()
+else:
+    # 정지 상태에서 타이머 보여주기
+    if st.session_state.phase == 'focus':
+        components.html(draw_circle(st.session_state.remaining_focus, total_focus), height=260)
+    elif st.session_state.phase == 'break':
+        components.html(draw_circle(st.session_state.remaining_break, total_break), height=260)
