@@ -64,11 +64,21 @@ if 'session_count' not in st.session_state:
 if 'session_goal' not in st.session_state:
     st.session_state.session_goal = 1
 
+# === 세션 기록 및 자동 조정용 상태 ===
+if 'session_history' not in st.session_state:
+    st.session_state.session_history = []
+
+if 'adjusted_focus' not in st.session_state:
+    st.session_state.adjusted_focus = None
+if 'adjusted_break' not in st.session_state:
+    st.session_state.adjusted_break = None
+
+
 # 동장 함수
 def handle_start():
     if st.session_state.phase == 'idle':
-        st.session_state.remaining_focus = total_focus
-        st.session_state.remaining_break = total_break
+        st.session_state.remaining_focus = st.session_state.adjusted_focus or total_focus
+        st.session_state.remaining_break = st.session_state.adjusted_break or total_break
         st.session_state.session_count = 0
         st.session_state.phase = 'focus'
     st.session_state.running = True
@@ -89,6 +99,30 @@ def handle_stop():
     st.session_state.remaining_focus = 0
     st.session_state.remaining_break = 0
     st.session_state.session_count = 0
+
+def adjust_intervals():
+    # 너무 짧은 시간일 경우 자동 조정 제외
+    if total_focus < 60 or total_break < 60:
+        return
+
+    history = st.session_state.session_history[-3:]
+    if not history:
+        return
+
+    success_count = sum(1 for h in history if h['success'])
+
+    focus = total_focus
+    brk = total_break
+
+    if success_count >= 2:
+        focus = min(focus + 60, 50 * 60)
+        brk = max(brk - 60, 3 * 60)
+    else:
+        focus = max(focus - 60, 10 * 60)
+        brk = min(brk + 60, 15 * 60)
+
+    st.session_state.adjusted_focus = focus
+    st.session_state.adjusted_break = brk
 
 # UI
 # ===== ⚙️ 타이머 설정 UI =====
@@ -189,6 +223,14 @@ if st.session_state.running:
         st.toast("쉬는 시간이 끝났습니다! ⏰")
         st.session_state.session_count += 1
 
+        # ==== ✅ 세션 성공 여부 기록 ====
+        session_success = st.session_state.remaining_focus <= 5  # 남은 시간 거의 없으면 성공으로 간주
+        st.session_state.session_history.append({
+            'success': session_success
+        })
+        adjust_intervals()
+
+
         if st.session_state.session_count >= st.session_state.session_goal:
             st.toast("🎉 모든 세션 완료!", icon="✅")
             time.sleep(1)
@@ -206,3 +248,15 @@ else:
         components.html(draw_circle(st.session_state.remaining_focus, total_focus), height=260)
     elif st.session_state.phase == 'break':
         components.html(draw_circle(st.session_state.remaining_break, total_break), height=260)
+
+# 자동 시간 조정
+if st.session_state.adjusted_focus is not None and st.session_state.adjusted_break is not None:
+    focus_min = st.session_state.adjusted_focus // 60
+    focus_sec = st.session_state.adjusted_focus % 60
+    break_min = st.session_state.adjusted_break // 60
+    break_sec = st.session_state.adjusted_break % 60
+
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### ⏱ 자동 조정된 시간")
+    st.sidebar.markdown(f"▶️ 집중 시간: `{focus_min}분 {focus_sec}초`")
+    st.sidebar.markdown(f"💤 휴식 시간: `{break_min}분 {break_sec}초`")
