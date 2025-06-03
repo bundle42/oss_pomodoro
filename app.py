@@ -117,13 +117,6 @@ total_break = break_hour * 3600 + break_min * 60 + break_sec
 st.title("⏳ 뽀모도로 타이머 프로토타입")
 st.caption("2025-05-20 필수 기능 구현 by 김민성")
 
-if st.session_state.phase == 'focus':
-    components.html(draw_circle(st.session_state.remaining_focus, total_focus), height=260)
-elif st.session_state.phase == 'break':
-    components.html(draw_circle(st.session_state.remaining_break, total_break), height=260)
-else:
-    components.html(draw_circle(0, 1), height=260)
-
 # ===== 🖼 이미지 버튼 표시 =====
 start_img = load_image_base64("btn_img/start.png")
 pause_img = load_image_base64("btn_img/pause.png")
@@ -131,19 +124,19 @@ reset_img = load_image_base64("btn_img/reset.png")
 stop_img  = load_image_base64("btn_img/stop.png")
 
 # # 버튼 영역
-# col_btn1, col_btn2, col_btn3, col_btn4 = st.columns(4)
-# with col_btn1:
-#     if st.button("▶️ 타이머 시작"):
-#         handle_start()
-# with col_btn2:
-#     if st.button("⏸️ 일시정지"):
-#         handle_pause()
-# with col_btn3:
-#     if st.button("🔄 타이머 초기화"):
-#         handle_reset()
-# with col_btn4:
-#     if st.button("⏹️ 타이머 중지"):
-#         handle_stop()
+col_btn1, col_btn2, col_btn3, col_btn4 = st.columns(4)
+with col_btn1:
+    if st.button("▶️ 타이머 시작"):
+        handle_start()
+with col_btn2:
+    if st.button("⏸️ 일시정지"):
+        handle_pause()
+with col_btn3:
+    if st.button("🔄 타이머 초기화"):
+        handle_reset()
+with col_btn4:
+    if st.button("⏹️ 타이머 중지"):
+        handle_stop()
 
 col1, col2, col3, col4 = st.columns(4)
 with col1:
@@ -156,8 +149,10 @@ with col4:
     image_button(stop_img, "stop")
 
 # ===== 🖱 버튼 이벤트 처리 =====
-if "btn" in st.query_params:
-    btn_val = st.query_params["btn"][0]
+query_params = st.query_params
+
+if "btn" in query_params:
+    btn_val = query_params["btn"][0]
     if btn_val == "start":
         handle_start()
     elif btn_val == "pause":
@@ -166,15 +161,16 @@ if "btn" in st.query_params:
         handle_reset()
     elif btn_val == "stop":
         handle_stop()
-    # 이벤트 후 파라미터 초기화
-    st.query_params()
+
+    # 쿼리 파라미터 초기화
+    st.query_params.clear()  # 또는 update({})
+    st.rerun()
 
 # 타이머 실행
 if st.session_state.running:
     if st.session_state.phase == 'focus' and st.session_state.remaining_focus > 0:
         st.session_state.remaining_focus -= 1
-        # components.html(draw_circle(st.session_state.remaining_focus, total_focus), height=260)
-        st.session_state.remaining_focus -= 1
+        components.html(draw_circle(st.session_state.remaining_focus, total_focus), height=260)
         time.sleep(1)
         st.rerun()
 
