@@ -1,5 +1,192 @@
 [
   {
+    "date": "2025-05-22",
+    "sessions": [
+      {
+        "session_number": 1,
+        "duration_minutes": 10
+      },
+      {
+        "session_number": 2,
+        "duration_minutes": 5
+      }
+    ],
+    "daily_review": "가볍게 시작",
+    "addition_time": 0
+  },
+  {
+    "date": "2025-05-23",
+    "sessions": [
+      {
+        "session_number": 1,
+        "duration_minutes": 15
+      },
+      {
+        "session_number": 2,
+        "duration_minutes": 10
+      }
+    ],
+    "daily_review": "기분 좋은 시작",
+    "addition_time": 1
+  },
+  {
+    "date": "2025-05-24",
+    "sessions": [
+      {
+        "session_number": 1,
+        "duration_minutes": 20
+      }
+    ],
+    "daily_review": "좀 졸림",
+    "addition_time": 0
+  },
+  {
+    "date": "2025-05-25",
+    "sessions": [
+      {
+        "session_number": 1,
+        "duration_minutes": 10
+      },
+      {
+        "session_number": 2,
+        "duration_minutes": 10
+      },
+      {
+        "session_number": 3,
+        "duration_minutes": 10
+      }
+    ],
+    "daily_review": "그래도 채웠다",
+    "addition_time": 1
+  },
+  {
+    "date": "2025-05-26",
+    "sessions": [
+      {
+        "session_number": 1,
+        "duration_minutes": 25
+      },
+      {
+        "session_number": 2,
+        "duration_minutes": 15
+      }
+    ],
+    "daily_review": "나름 만족",
+    "addition_time": 1
+  },
+  {
+    "date": "2025-05-27",
+    "sessions": [
+      {
+        "session_number": 1,
+        "duration_minutes": 0
+      }
+    ],
+    "daily_review": "못함",
+    "addition_time": 0
+  },
+  {
+    "date": "2025-05-28",
+    "sessions": [
+      {
+        "session_number": 1,
+        "duration_minutes": 20
+      },
+      {
+        "session_number": 2,
+        "duration_minutes": 5
+      }
+    ],
+    "daily_review": "짧지만 의미있음",
+    "addition_time": 1
+  },
+  {
+    "date": "2025-05-29",
+    "sessions": [
+      {
+        "session_number": 1,
+        "duration_minutes": 30
+      }
+    ],
+    "daily_review": "오늘 집중력 좋음",
+    "addition_time": 2
+  },
+  {
+    "date": "2025-05-30",
+    "sessions": [
+      {
+        "session_number": 1,
+        "duration_minutes": 20
+      },
+      {
+        "session_number": 2,
+        "duration_minutes": 10
+      }
+    ],
+    "daily_review": "꾸준히 하고 있음",
+    "addition_time": 1
+  },
+  {
+    "date": "2025-05-31",
+    "sessions": [
+      {
+        "session_number": 1,
+        "duration_minutes": 15
+      },
+      {
+        "session_number": 2,
+        "duration_minutes": 15
+      }
+    ],
+    "daily_review": "무난무난",
+    "addition_time": 1
+  },
+  {
+    "date": "2025-06-01",
+    "sessions": [
+      {
+        "session_number": 1,
+        "duration_minutes": 10
+      }
+    ],
+    "daily_review": "조금만 했음",
+    "addition_time": 0
+  },
+  {
+    "date": "2025-06-02",
+    "sessions": [
+      {
+        "session_number": 1,
+        "duration_minutes": 25
+      },
+      {
+        "session_number": 2,
+        "duration_minutes": 5
+      }
+    ],
+    "daily_review": "리듬 다시 잡는 중",
+    "addition_time": 1
+  },
+  {
+    "date": "2025-06-03",
+    "sessions": [
+      {
+        "session_number": 1,
+        "duration_minutes": 10
+      },
+      {
+        "session_number": 2,
+        "duration_minutes": 10
+      },
+      {
+        "session_number": 3,
+        "duration_minutes": 10
+      }
+    ],
+    "daily_review": "조금 힘듦",
+    "addition_time": 1
+  },
+  {
     "date": "2025-06-04",
     "sessions": [
       {
@@ -35,23 +222,11 @@
       },
       {
         "session_number": 4,
-        "duration_minutes": 1
+        "duration_minutes": 0
       },
       {
         "session_number": 5,
-        "duration_minutes": 1
-      },
-      {
-        "session_number": 6,
-        "duration_minutes": 0
-      },
-      {
-        "session_number": 7,
-        "duration_minutes": 0
-      },
-      {
-        "session_number": 8,
-        "duration_minutes": 0
+        "duration_minutes": 5
       }
     ],
     "daily_review": "굿굿",
