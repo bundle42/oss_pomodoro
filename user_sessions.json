@@ -1,0 +1,60 @@
+[
+  {
+    "date": "2025-06-04",
+    "sessions": [
+      {
+        "session_number": 1,
+        "duration_minutes": 10
+      },
+      {
+        "session_number": 2,
+        "duration_minutes": 20
+      },
+      {
+        "session_number": 3,
+        "duration_minutes": 10
+      }
+    ],
+    "daily_review": "어렵군",
+    "addition_time": 2
+  },
+  {
+    "date": "2025-06-05",
+    "sessions": [
+      {
+        "session_number": 1,
+        "duration_minutes": 30
+      },
+      {
+        "session_number": 2,
+        "duration_minutes": 20
+      },
+      {
+        "session_number": 3,
+        "duration_minutes": 10
+      },
+      {
+        "session_number": 4,
+        "duration_minutes": 1
+      },
+      {
+        "session_number": 5,
+        "duration_minutes": 1
+      },
+      {
+        "session_number": 6,
+        "duration_minutes": 0
+      },
+      {
+        "session_number": 7,
+        "duration_minutes": 0
+      },
+      {
+        "session_number": 8,
+        "duration_minutes": 0
+      }
+    ],
+    "daily_review": "굿굿",
+    "addition_time": 2
+  }
+]
