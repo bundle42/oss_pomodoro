@@ -29,20 +29,20 @@ def draw_circle(remaining, total):
     </div>"""
     return html
 
-# ===== 🖼 이미지 버튼 관련 함수 =====
-def load_image_base64(file_path):
-    with open(file_path, "rb") as img_file:
-        return base64.b64encode(img_file.read()).decode()
+# # ===== 🖼 이미지 버튼 관련 함수 =====
+# def load_image_base64(file_path):
+#     with open(file_path, "rb") as img_file:
+#         return base64.b64encode(img_file.read()).decode()
 
-def image_button(img_base64, key):
-    btn_html = f"""
-    <form action="" method="get">
-        <button type="submit" name="btn" value="{key}" style="border:none;background:none;">
-            <img src="data:image/png;base64,{img_base64}" width="60">
-        </button>
-    </form>
-    """
-    components.html(btn_html, height=80)
+# def image_button(img_base64, key):
+#     btn_html = f"""
+#     <form action="" method="get">
+#         <button type="submit" name="btn" value="{key}" style="border:none;background:none;">
+#             <img src="data:image/png;base64,{img_base64}" width="60">
+#         </button>
+#     </form>
+#     """
+#     components.html(btn_html, height=80)
 
 def local_css(file_name):
     with open(file_name) as f:
@@ -151,11 +151,11 @@ total_break = break_hour * 3600 + break_min * 60 + break_sec
 st.title("⏳ 뽀모도로 타이머 프로토타입")
 st.caption("2025-05-20 필수 기능 구현 by 김민성")
 
-# ===== 🖼 이미지 버튼 표시 =====
-start_img = load_image_base64("btn_img/start.png")
-pause_img = load_image_base64("btn_img/pause.png")
-reset_img = load_image_base64("btn_img/reset.png")
-stop_img  = load_image_base64("btn_img/stop.png")
+# # ===== 🖼 이미지 버튼 표시 =====
+# start_img = load_image_base64("btn_img/start.png")
+# pause_img = load_image_base64("btn_img/pause.png")
+# reset_img = load_image_base64("btn_img/reset.png")
+# stop_img  = load_image_base64("btn_img/stop.png")
 
 # # 버튼 영역
 col_btn1, col_btn2, col_btn3, col_btn4 = st.columns(4)
@@ -172,15 +172,15 @@ with col_btn4:
     if st.button("⏹️ 타이머 중지"):
         handle_stop()
 
-col1, col2, col3, col4 = st.columns(4)
-with col1:
-    image_button(start_img, "start")
-with col2:
-    image_button(pause_img, "pause")
-with col3:
-    image_button(reset_img, "reset")
-with col4:
-    image_button(stop_img, "stop")
+# col1, col2, col3, col4 = st.columns(4)
+# with col1:
+#     image_button(start_img, "start")
+# with col2:
+#     image_button(pause_img, "pause")
+# with col3:
+#     image_button(reset_img, "reset")
+# with col4:
+#     image_button(stop_img, "stop")
 
 # ===== 🖱 버튼 이벤트 처리 =====
 query_params = st.query_params
@@ -248,6 +248,13 @@ else:
         components.html(draw_circle(st.session_state.remaining_focus, total_focus), height=260)
     elif st.session_state.phase == 'break':
         components.html(draw_circle(st.session_state.remaining_break, total_break), height=260)
+    elif st.session_state.phase == 'idle':
+        # 🔽 시작 전에도 입력한 "집중시간" 기준 원형 표시
+        if total_focus > 0:
+            components.html(draw_circle(total_focus, total_focus), height=260)
+        else:
+            components.html(draw_circle(0, 1), height=260)
+
 
 # 자동 시간 조정
 if st.session_state.adjusted_focus is not None and st.session_state.adjusted_break is not None:
