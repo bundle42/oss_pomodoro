@@ -28,6 +28,12 @@ def draw_circle(remaining, total):
     </div>"""
     return html
 
+def local_css(file_name):
+    with open(file_name, "r", encoding="utf-8") as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+local_css("style.css")
+
 # ===== JSON 저장 관련 =====
 DATA_PATH = "user_sessions.json"
 
