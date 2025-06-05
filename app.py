@@ -73,8 +73,7 @@ if 'adjusted_focus' not in st.session_state:
 if 'adjusted_break' not in st.session_state:
     st.session_state.adjusted_break = None
 
-
-# 동장 함수
+# 동작 함수
 def handle_start():
     if st.session_state.phase == 'idle':
         st.session_state.remaining_focus = st.session_state.adjusted_focus or total_focus
@@ -85,6 +84,10 @@ def handle_start():
 
 def handle_pause():
     st.session_state.running = False
+
+    # 다음 세션 시간만 줄이고, 이번 세션은 그대로
+    st.session_state.adjusted_focus = max(st.session_state.remaining_focus - 60, 1)
+    st.session_state.adjusted_break = total_break
 
 def handle_reset():
     st.session_state.running = False
@@ -100,45 +103,25 @@ def handle_stop():
     st.session_state.remaining_break = 0
     st.session_state.session_count = 0
 
-def adjust_intervals():
-    # 너무 짧은 시간일 경우 자동 조정 제외
-    if total_focus < 60 or total_break < 60:
-        return
+base_focus_time = 5
 
-    history = st.session_state.session_history[-3:]
-    if not history:
-        return
-
-    success_count = sum(1 for h in history if h['success'])
-
-    focus = total_focus
-    brk = total_break
-
-    if success_count >= 2:
-        focus = min(focus + 60, 50 * 60)
-        brk = max(brk - 60, 3 * 60)
-    else:
-        focus = max(focus - 60, 10 * 60)
-        brk = min(brk + 60, 15 * 60)
-
-    st.session_state.adjusted_focus = focus
-    st.session_state.adjusted_break = brk
-
-# UI
-# ===== ⚙️ 타이머 설정 UI =====
+# ===== ⚙️ 타이머 설정 UI (기본값에 조정값 반영) =====
 with st.sidebar:
-    st.markdown("## 🕒 집중 시간 설정")
-    focus_hour = st.number_input("Hours", 0, 10, 0)
-    focus_min = st.number_input("Minutes", 0, 59, 0)
-    focus_sec = st.number_input("Seconds", 0, 59, 5)
+    adjusted_focus_sec = st.session_state.adjusted_focus or base_focus_time
+    adj_focus_h, rem = divmod(adjusted_focus_sec, 3600)
+    adj_focus_m, adj_focus_s = divmod(rem, 60)
+
+    focus_hour = st.number_input("Hours", 0, 10, int(adj_focus_h), key="focus_hour")
+    focus_min = st.number_input("Minutes", 0, 59, int(adj_focus_m), key="focus_min")
+    focus_sec = st.number_input("Seconds", 0, 59, int(adj_focus_s), key="focus_sec")
 
     st.markdown("## 🛌 휴식 시간 설정")
     break_hour = st.number_input("Hours ", 0, 5, 0)
     break_min = st.number_input("Minutes ", 0, 59, 0)
-    break_sec = st.number_input("Seconds ", 0, 59, 5)
+    break_sec = st.number_input("Seconds ", 0, 59, 3)
 
     st.markdown("## 🔁 세션 반복 설정")
-    st.session_state.session_goal = st.number_input("반복할 세션 수", 1, 20, 1)
+    st.session_state.session_goal = st.number_input("반복할 세션 수", 1, 20, 3)
 
     st.markdown("## 📝 기록")
     st.markdown(f"🍅 완료된 세션: **{st.session_state.session_count} / {st.session_state.session_goal}**")
@@ -147,15 +130,14 @@ with st.sidebar:
 total_focus = focus_hour * 3600 + focus_min * 60 + focus_sec
 total_break = break_hour * 3600 + break_min * 60 + break_sec
 
+# 사용자가 수동으로 조정했을 경우 → 자동 조정값을 무시
+if st.session_state.running is False and st.session_state.phase == 'idle':
+    st.session_state.adjusted_focus = total_focus
+    st.session_state.adjusted_break = total_break
+
 # ===== 🕑 타이머 시각화 =====
 st.title("⏳ 뽀모도로 타이머 프로토타입")
 st.caption("2025-05-20 필수 기능 구현 by 김민성")
-
-# # ===== 🖼 이미지 버튼 표시 =====
-# start_img = load_image_base64("btn_img/start.png")
-# pause_img = load_image_base64("btn_img/pause.png")
-# reset_img = load_image_base64("btn_img/reset.png")
-# stop_img  = load_image_base64("btn_img/stop.png")
 
 # # 버튼 영역
 col_btn1, col_btn2, col_btn3, col_btn4 = st.columns(4)
@@ -166,21 +148,11 @@ with col_btn2:
     if st.button("⏸️ 일시정지"):
         handle_pause()
 with col_btn3:
-    if st.button("🔄 타이머 초기화"):
+    if st.button("🔄 현재 세션 초기화"):
         handle_reset()
 with col_btn4:
     if st.button("⏹️ 타이머 중지"):
         handle_stop()
-
-# col1, col2, col3, col4 = st.columns(4)
-# with col1:
-#     image_button(start_img, "start")
-# with col2:
-#     image_button(pause_img, "pause")
-# with col3:
-#     image_button(reset_img, "reset")
-# with col4:
-#     image_button(stop_img, "stop")
 
 # ===== 🖱 버튼 이벤트 처리 =====
 query_params = st.query_params
@@ -223,13 +195,15 @@ if st.session_state.running:
         st.toast("쉬는 시간이 끝났습니다! ⏰")
         st.session_state.session_count += 1
 
-        # ==== ✅ 세션 성공 여부 기록 ====
-        session_success = st.session_state.remaining_focus <= 5  # 남은 시간 거의 없으면 성공으로 간주
+        # ✅ 세션 성공 여부 판단
+        session_success = st.session_state.remaining_focus <= 5
         st.session_state.session_history.append({
             'success': session_success
         })
-        adjust_intervals()
 
+        # ✅ 성공이면 다음 세션 시간 +1분
+        if session_success:
+            st.session_state.adjusted_focus = st.session_state.adjusted_focus + 60
 
         if st.session_state.session_count >= st.session_state.session_goal:
             st.toast("🎉 모든 세션 완료!", icon="✅")
@@ -238,7 +212,7 @@ if st.session_state.running:
             st.session_state.phase = 'idle'
         else:
             st.session_state.phase = 'focus'
-            st.session_state.remaining_focus = total_focus
+            st.session_state.remaining_focus = st.session_state.adjusted_focus or total_focus  # 자동 조정 반영
             st.session_state.remaining_break = total_break
             st.session_state.running = True
         st.rerun()
@@ -249,21 +223,8 @@ else:
     elif st.session_state.phase == 'break':
         components.html(draw_circle(st.session_state.remaining_break, total_break), height=260)
     elif st.session_state.phase == 'idle':
-        # 🔽 시작 전에도 입력한 "집중시간" 기준 원형 표시
+        # 시작 전에도 입력한 "집중시간" 기준 원형 표시
         if total_focus > 0:
             components.html(draw_circle(total_focus, total_focus), height=260)
         else:
             components.html(draw_circle(0, 1), height=260)
-
-
-# 자동 시간 조정
-if st.session_state.adjusted_focus is not None and st.session_state.adjusted_break is not None:
-    focus_min = st.session_state.adjusted_focus // 60
-    focus_sec = st.session_state.adjusted_focus % 60
-    break_min = st.session_state.adjusted_break // 60
-    break_sec = st.session_state.adjusted_break % 60
-
-    st.sidebar.markdown("---")
-    st.sidebar.markdown("### ⏱ 자동 조정된 시간")
-    st.sidebar.markdown(f"▶️ 집중 시간: `{focus_min}분 {focus_sec}초`")
-    st.sidebar.markdown(f"💤 휴식 시간: `{break_min}분 {break_sec}초`")
