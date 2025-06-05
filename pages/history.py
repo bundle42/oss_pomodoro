@@ -11,7 +11,7 @@ st.title("📅 나의 뽀모도로 기록 보기")
 # 데이터 불러오기 함수
 def load_session_data():
     if os.path.exists(DATA_PATH):
-        with open(DATA_PATH, "r") as f:
+        with open(DATA_PATH, "r", encoding="utf-8") as f:
             return json.load(f)
     return []
 

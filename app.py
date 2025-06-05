@@ -78,11 +78,9 @@ def update_review(date_str, review, add_time):
 
 # 자동 추천시간 설정
 def calculate_adjusted_focus():
-    if not os.path.exists(DATA_PATH):
-        return None
-
-    with open(DATA_PATH, "r") as f:
-        data = json.load(f)
+    if os.path.exists(DATA_PATH):
+        with open(DATA_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
 
     two_weeks_ago = datetime.now() - timedelta(days=14)
     durations = []
