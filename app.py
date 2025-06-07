@@ -41,7 +41,7 @@ DATA_PATH = "user_sessions.json"
 def save_session_result(duration_minutes):
     today_str = datetime.now().strftime("%Y-%m-%d")
     if os.path.exists(DATA_PATH):
-        with open(DATA_PATH, "r") as f:
+        with open(DATA_PATH, "r", encoding="utf-8") as f:
             data = json.load(f)
     else:
         data = []
@@ -62,13 +62,13 @@ def save_session_result(duration_minutes):
         "duration_minutes": duration_minutes
     })
 
-    with open(DATA_PATH, "w") as f:
+    with open(DATA_PATH, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
 # 리뷰 업데이트
 def update_review(date_str, review, add_time):
     if os.path.exists(DATA_PATH):
-        with open(DATA_PATH, "r") as f:
+        with open(DATA_PATH, "r",  encoding="utf-8") as f:
             data = json.load(f)
     else:
         return
@@ -79,7 +79,7 @@ def update_review(date_str, review, add_time):
             entry["addition_time"] = add_time
             break
 
-    with open(DATA_PATH, "w") as f:
+    with open(DATA_PATH, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
 # 자동 추천시간 설정
